@@ -13,30 +13,39 @@ image:[],
 page:1,
 isLoad: false,
 loadMore: false
-  }
+  };
 
 
 
   handleChange =(e) => {
-    this.setState({query:e.target.value})
+    this.setState({query:e.target.value.trim()})
     
   }
 handleSubmit = (e) => {
+  
   e.preventDefault()
   if (this.state.query.trim().length === 0) {
     alert('enter data to search')
     return
   }
+ 
+  
+ try {
+ 
+  this.setState({
+    isLoad: !this.state.isLoad,
+  })
 
-  this.setState({isLoad: true})
   fetchImages(this.state.query, 1).then((item) => {
     if(item.totalHits === 0){
       alert('Nothing was found according to your request')
+      return
     }
- item.totalHits <500? this.setState({loadMore: false}):this.setState({loadMore: true})
+    
+ item.hits.length <12? this.setState({loadMore: false}):this.setState({loadMore: true})
  this.setState({image:this.normalize(item.hits)})
-  })
-  this.setState({isLoad: false})
+  })  } catch (error){console.log(error)} finally { }
+ 
 }
 normalize = (array) => {
   
@@ -53,13 +62,15 @@ return array.map(arr => {
 }
 
 handleOnClick = (e) => {
+ 
+try {
+  this.setState({isLoad: true})
 
-this.setState({isLoad: true})
 fetchImages(this.state.query, this.state.page + 1).then((item) => {
-  item.totalHits <500? this.setState({loadMore: false}):this.setState({loadMore: true})
+  item.hits.length <12? this.setState({loadMore: false}):this.setState({loadMore: true})
   this.setState({image:[...this.state.image, ...this.normalize(item.hits)],page:this.state.page + 1})
-   })
-   this.setState({isLoad: false})
+   })} catch (error){console.log(error)}  finally {this.setState({isLoad: false})}
+   
 }
 
 render () {
@@ -79,7 +90,7 @@ render () {
       <Searchbar handleChange = {this.handleChange} query = {this.state.query} handleSubmit = {this.handleSubmit}/>
       <ImageGallery image = {this.state.image}/> 
       {this.state.loadMore && <Button onClick = {this.handleOnClick}></Button>}
-      {this.state.isLoad && <Loader/>}
+      {this.state.onLoad && <Loader/>}
       <Modal></Modal>
      
     </div>
