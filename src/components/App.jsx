@@ -33,7 +33,7 @@ handleSubmit = (e) => {
  try {
  
   this.setState({
-    isLoad: !this.state.isLoad,
+    isLoad: true,
   })
 
   fetchImages(this.state.query, 1).then((item) => {
@@ -44,7 +44,9 @@ handleSubmit = (e) => {
     
  item.hits.length <12? this.setState({loadMore: false}):this.setState({loadMore: true})
  this.setState({image:this.normalize(item.hits)})
-  })  } catch (error){console.log(error)} finally { }
+  })  } catch (error){console.log(error)} finally { this.setState({
+    isLoad: false,
+  })}
  
 }
 normalize = (array) => {
